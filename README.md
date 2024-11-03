@@ -5,17 +5,19 @@
 [Полный список](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) поддерживаемых ресурсов.
 
 ## Начало ##
-## Руками ##
+## Подготовка ##
+(Продвинутый вариант)
 Для корректной работы установить [python](https://www.python.org/downloads/), [ffmpeg](https://github.com/GyanD/codexffmpeg/releases/), при необходимости [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases).
 
-### Установщиком Chocolatey###
+### Установщик Chocolatey ###
+(Альтернативный вариант)
 Установить [Chocolatey](https://chocolatey.org/install).
 После установки ввести:
 ```
 choko install python ffmpeg
 ```
 ### Установщиком Winget ###
-Он скорее всего у вас предустановлен.
+(Простой вариант)Он скорее всего у вас предустановлен.
 В консоли:
 ```
 winget install -e --id Python.Python.3.10
