@@ -5,7 +5,7 @@
 [Полный список](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) поддерживаемых ресурсов.
 
 ## Начало ##
-Дальнейшие шаги только для файла video_downloader.py
+Дальнейшие шаги только для файла **video_downloader.py**
 ### Подготовка ###
 *(Продвинутый вариант)*
 Для корректной работы установить [python](https://www.python.org/downloads/), [ffmpeg](https://github.com/GyanD/codexffmpeg/releases/), при необходимости [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases).
