@@ -39,3 +39,7 @@ venv\Scripts\activate.bat
 ```
 pip install yt_dlp
 ```
+## Использование ##
+1. Запустить **video_downloader.py**
+2. Вставить ссылку на видео
+3. Выбрать предпочитаемый формат
