@@ -7,16 +7,6 @@
 ## Начало ##
 Дальнейшие шаги только для файла **video_downloader.py**
 ### Подготовка ###
-*(Продвинутый вариант)*
-Для корректной работы установить [python](https://www.python.org/downloads/), [ffmpeg](https://github.com/GyanD/codexffmpeg/releases/), при необходимости [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases).
-
-#### Установщик Chocolatey ####
-*(Альтернативный вариант)*
-Установить [Chocolatey](https://chocolatey.org/install).
-После установки ввести:
-```
-choko install python ffmpeg
-```
 #### Установщиком Winget ####
 *(Простой вариант)*
 Он скорее всего у вас предустановлен.
@@ -25,6 +15,17 @@ choko install python ffmpeg
 winget install -e --id Python.Python.3.10
 winget install -e --id=Gyan.FFmpeg  
 ```
+#### Установщиком Chocolatey ####
+*(Альтернативный вариант)*
+Установить [Chocolatey](https://chocolatey.org/install).
+После установки ввести:
+```
+choko install python ffmpeg
+```
+### Из сурс файлов ###
+*(Продвинутый вариант)*
+Для корректной работы установить [python](https://www.python.org/downloads/), [ffmpeg](https://github.com/GyanD/codexffmpeg/releases/), при необходимости [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases).
+
 ### Установка ###
 Создать окружение:
 ```
