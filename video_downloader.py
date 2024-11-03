@@ -2,13 +2,19 @@
 # Полный список https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md
 
 import yt_dlp
+import os
 
-def download_video(url):
+def download_video(url, videos_dir):
+    # Создаем папку videos, если она не существует
+    if not os.path.exists(videos_dir):
+        os.makedirs(videos_dir)
+
     # Опции для yt-dlp
     ydl_opts = {
-        'format': 'best',  # Загружаем лучшее доступное качество
+        'format': 'best',
         'noplaylist': True,  # Не загружать плейлисты
         'socket_timeout': 60,
+        'outtmpl': os.path.join(videos_dir, '%(title)s.%(ext)s'),  # Путь сохранения
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -38,11 +44,13 @@ def download_video(url):
         ydl_opts['format'] = selected_format['format_id']
 
         # Скачивание видео
+        print(f"Загрузка видео в папку {videos_dir}...")
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
         print("Видео успешно загружено!")
 
 if __name__ == '__main__':
+    videos_dir = 'videos'
     video_url = input("Введите URL видео: ")
-    download_video(video_url)
+    download_video(video_url, videos_dir)
