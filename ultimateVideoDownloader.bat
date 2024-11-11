@@ -5,7 +5,7 @@ cls
 :menu
 color 0B
 echo ╔══════════════════════════════════════════╗
-echo ║        YouTube Downloader v1.0           ║
+echo ║     Ultimate YouTube Downloader v1.0     ║
 echo ╠══════════════════════════════════════════╣
 echo ║ Выберите тип загрузки:                   ║
 echo ║                                          ║
@@ -22,7 +22,7 @@ set /p choice="Введите номер (0-4): "
 if "%choice%"=="1" (
     cls
     echo ╔══════════════════════════════════════════╗
-    echo ║           Загрузка видео                 ║
+    echo ║             Загрузка видео               ║
     echo ╚══════════════════════════════════════════╝
     python scripts/video_downloader.py
     echo.
@@ -46,7 +46,7 @@ if "%choice%"=="2" (
 if "%choice%"=="3" (
     cls
     echo ╔══════════════════════════════════════════╗
-    echo ║           Загрузка аудио                 ║
+    echo ║             Загрузка аудио               ║
     echo ╚══════════════════════════════════════════╝
     python scripts/audio_downloader.py
     echo.
