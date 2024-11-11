@@ -1,6 +1,3 @@
-# Загрузчик видео. Работает для ВК, Ютуба, Твича и много чего ещё
-# Полный список https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md
-
 import yt_dlp
 import os
 
@@ -11,10 +8,22 @@ def download_video(url, videos_dir):
 
     # Опции для yt-dlp
     ydl_opts = {
-        'format': 'best',
-        'noplaylist': True,  # Не загружать плейлисты
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
+        'noplaylist': True,
         'socket_timeout': 60,
-        'outtmpl': os.path.join(videos_dir, '%(title)s.%(ext)s'),  # Путь сохранения
+        'outtmpl': os.path.join(videos_dir, '%(title)s.%(ext)s'),
+        'postprocessors': [
+            {
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': 'mp4' # Конвертация в mp4
+            },
+            {
+                'key': 'FFmpegMetadata',
+            },
+            {
+                'key': 'FFmpegFixupM4a'
+            }
+        ]
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -30,7 +39,7 @@ def download_video(url, videos_dir):
         for i, fmt in enumerate(formats):
             filesize_display = '{:.2f} MB'.format(fmt['filesize'] / (1024 * 1024)) if fmt.get('filesize') is not None else '? MB'
             
-            print(f"{i + 1} | {fmt['format']} | {fmt.get('fps', 'Не указано')} FPS | Битрейт: {fmt.get('tbr', 'Не указан')} kbit/s | {fmt.get('ext', 'Не указано')} | {filesize_display}")
+            print(f"{i + 1} | {fmt['format']} | {fmt.get('fps', 'Не указано')} FPS | Битрейт: {fmt.get('tbr', 'Не указан')} kbit/s | {fmt.get('ext', '')} | {filesize_display}")
 
         # Запрос выбора качества
         try:

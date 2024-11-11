@@ -1,5 +1,3 @@
-#https://colab.research.google.com/drive/1oaBFJv6G6ZthkZUcNEEm3GMOCH4ktBD8?usp=drive_link#scrollTo=X1Daylmj5I1f
-
 import yt_dlp
 from google.colab import drive
 from google.colab import files
@@ -10,8 +8,8 @@ drive.mount('/content/drive')
 def download_video(url):
     # Опции для yt-dlp
     ydl_opts = {
-        'format': 'best',  # Загружаем лучшее доступное качество
-        'noplaylist': True,  # Не загружать плейлисты
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
+        'noplaylist': True,
         'socket_timeout': 60,
         'outtmpl': '/content/drive/MyDrive/video_downloader/%(title)s.%(ext)s'
     }
@@ -49,5 +47,5 @@ def download_video(url):
         print("Видео успешно загружено!")
 
 if __name__ == '__main__':
-    video_url = input("Введите URL видео с YouTube: ")
+    video_url = input("Введите URL видео: ")
     download_video(video_url)
