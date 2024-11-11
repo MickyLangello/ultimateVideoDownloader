@@ -2,7 +2,7 @@ import yt_dlp
 from pathlib import Path
 
 def download_video(url):
-    videos_dir = Path('videos')
+    videos_dir = Path('downloads')
     videos_dir.mkdir(exist_ok=True)
     
     base_opts = {
