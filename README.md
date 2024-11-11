@@ -1,16 +1,12 @@
 # Загрузчик видео #
-Работает для ВК, Ютуба, Твича, Тиктока и много чего ещё.
+Работает для ВК, Ютуба, Твича, Тиктока и много чего ещё
 ## Начало ##
 Дальнейшие шаги для файла **video_downloader.py**
 ### Подготовка ###
-В консоли:
+В консоли ввести:
 ```
 winget install -e --id Python.Python.3.10
 winget install -e --id=Gyan.FFmpeg  
-```
-### Установка библиотеки ###
-В консоли:
-```
 pip install yt_dlp
 ```
 ## Использование ##
@@ -22,4 +18,4 @@ pip install yt_dlp
 ## Полезные ссылки ##
 - [Полный список поддерживаемых ресурсов](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 - [Google Collab](https://colab.research.google.com/) для запуска **video_downloader_drive.py** и загрузки в Google Drive
-- [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases), кто знает тот знает
+- [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI/releases) кто знает тот знает
