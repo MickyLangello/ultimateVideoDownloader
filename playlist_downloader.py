@@ -1,68 +1,133 @@
 import yt_dlp
-import os
+from pathlib import Path
 
-def download_playlist(playlist_url, videos_dir):
-    # Создаем папку для видео, если она не существует
-    if not os.path.exists(videos_dir):
-        os.makedirs(videos_dir)
-
-    # Опции для yt-dlp
-    ydl_opts = {
-        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-        'noplaylist': False,
+def download_playlist(url):
+    videos_dir = Path('videos')
+    videos_dir.mkdir(exist_ok=True)
+    
+    base_opts = {
+        'noplaylist': False,  # Разрешаем загрузку плейлистов
         'socket_timeout': 60,
-        'outtmpl': os.path.join(videos_dir, '%(title)s.%(ext)s'),
-        'postprocessors': [
-            {
-                'key': 'FFmpegVideoConvertor',
-                'preferedformat': 'mp4'  # Конвертация в mp4
-            },
-            {
-                'key': 'FFmpegMetadata',
-            },
-            {
-                'key': 'FFmpegFixupM4a'
-            }
+        'merge_output_format': 'mp4',
+        'postprocessors': [{
+            'key': 'FFmpegVideoConvertor',
+            'preferedformat': 'mp4',
+        }, {
+            'key': 'FFmpegMetadata',
+        }, {
+            'key': 'FFmpegFixupM4a'
+        }],
+        'ffmpeg_args': [
+            '-c:v', 'libx264',
+            '-c:a', 'aac',
+            '-preset', 'medium',
+            '-crf', '23',
+            '-movflags', '+faststart',
         ]
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        # Получаем информацию о плейлисте
-        playlist_info = ydl.extract_info(playlist_url, download=False)
-
-        # Проверяем, содержит ли URL плейлист
-        if 'entries' not in playlist_info:
-            print("Указанный URL не является плейлистом.")
-            return
-        
-        # Получаем название плейлиста и создаем для него папку
-        playlist_name = playlist_info.get('title', 'Без названия').replace('/', '_')
-        playlist_dir = os.path.join(videos_dir, playlist_name)
-        if not os.path.exists(playlist_dir):
-            os.makedirs(playlist_dir)
-
-        print(f"Начинается загрузка плейлиста: {playlist_name}")
-
-        # Обновляем путь сохранения в настройках yt-dlp
-        ydl_opts['outtmpl'] = os.path.join(playlist_dir, '%(title)s.%(ext)s')
-
-        # Проходим по каждому видео в плейлисте
-        for video in playlist_info['entries']:
-            if video is None:
-                print("Пропущено видео из-за ошибки извлечения информации.")
-                continue
+    with yt_dlp.YoutubeDL(base_opts) as ydl:
+        try:
+            # Получаем информацию о плейлисте
+            playlist_info = ydl.extract_info(url, download=False)
             
-            # Получаем URL видео
-            video_url = video.get('webpage_url')
-            print(f"Загрузка видео: {video.get('title', 'Без названия')}")
+            # Проверяем, содержит ли URL плейлист
+            if 'entries' not in playlist_info:
+                print("Указанный URL не является плейлистом.")
+                return
+            
+            # Создаем директорию для плейлиста
+            playlist_name = playlist_info.get('title', 'Unnamed_Playlist').replace('/', '_')
+            playlist_dir = videos_dir / playlist_name
+            playlist_dir.mkdir(exist_ok=True)
+            
+            print(f"\nНазвание плейлиста: {playlist_name}")
+            print(f"Количество видео: {len(playlist_info['entries'])}")
 
-            # Скачиваем видео
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([video_url])
-        
-        print("Все видео из плейлиста успешно загружены!")
+            # Получаем список всех доступных форматов из первого видео
+            first_video = next((v for v in playlist_info['entries'] if v is not None), None)
+            if not first_video:
+                print("Не удалось получить информацию о форматах видео.")
+                return
+
+            formats = first_video.get('formats', [])
+            
+            if not formats:
+                print("Нет доступных форматов")
+                return
+
+            # Фильтруем форматы, оставляя видео форматы
+            filtered_formats = []
+            for f in formats:
+                if f.get('vcodec') != 'none':
+                    f['height'] = f.get('height', 0)
+                    filtered_formats.append(f)
+
+            # Сортируем форматы по разрешению
+            filtered_formats.sort(key=lambda x: (x.get('height', 0), x.get('tbr', 0)))
+
+            print("\nДоступные форматы:")
+            for i, fmt in enumerate(filtered_formats):
+                filesize = fmt.get('filesize')
+                if filesize is None:
+                    filesize = fmt.get('filesize_approx', 0)
+                
+                filesize_display = '{:.2f}'.format(filesize / (1024 * 1024)) if filesize else '?'
+                
+                fps = fmt.get('fps', '?')
+                if fps != '?' and isinstance(fps, (int, float)):
+                    fps = int(round(fps))
+
+                tbr = fmt.get('tbr', '?')
+                if tbr != '?' and isinstance(tbr, (int, float)):
+                    tbr = int(round(tbr))
+                
+                print(f"{i + 1} | {fmt.get('height', '?')}p | {fps} FPS | Битрейт: {tbr} kbit/s | {fmt.get('ext', '')} | {filesize_display} MB")
+
+            while True:
+                try:
+                    choice = int(input("\nВыберите качество для всех видео плейлиста (введите номер): ")) - 1
+                    if 0 <= choice < len(filtered_formats):
+                        break
+                    print("Неверный номер. Попробуйте снова.")
+                except ValueError:
+                    print("Введите число.")
+
+            selected_format = filtered_formats[choice]
+            
+            # Создаем новые опции с выбранным форматом
+            download_opts = base_opts.copy()
+            format_id = selected_format['format_id']
+            download_opts['format'] = f"{format_id}+bestaudio/best"
+            download_opts['outtmpl'] = str(playlist_dir / '%(title)s.%(ext)s')
+
+            print("\nНачинается загрузка плейлиста...")
+            print("Все видео будут загружены и сконвертированы в MP4 с кодеком H264")
+            
+            # Загружаем видео
+            with yt_dlp.YoutubeDL(download_opts) as ydl_download:
+                for i, video in enumerate(playlist_info['entries'], 1):
+                    if video is None:
+                        print(f"\nВидео #{i}: Пропущено из-за ошибки получения информации")
+                        continue
+                    
+                    print(f"\nЗагрузка видео #{i}: {video.get('title', 'Без названия')}")
+                    video_url = video.get('webpage_url')
+                    try:
+                        ydl_download.download([video_url])
+                    except Exception as e:
+                        print(f"Ошибка при загрузке видео #{i}: {str(e)}")
+                        continue
+            
+            print("\nЗагрузка плейлиста завершена!")
+            print(f"Файлы сохранены в директории: {playlist_dir}")
+            
+        except Exception as e:
+            print(f"\nОшибка при работе с плейлистом: {str(e)}")
+            print("Полное описание ошибки:")
+            import traceback
+            traceback.print_exc()
 
 if __name__ == '__main__':
-    videos_dir = 'videos'
     playlist_url = input("Введите URL плейлиста: ")
-    download_playlist(playlist_url, videos_dir)
+    download_playlist(playlist_url)
