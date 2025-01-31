@@ -2,20 +2,21 @@ import yt_dlp
 from pathlib import Path
 
 def download_video(url):
-    videos_dir = Path('/home/micky/micky-share/Media/YouTube')
+    videos_dir = Path('downloads')
     videos_dir.mkdir(exist_ok=True)
     base_opts = {
         'noplaylist': True,
         'socket_timeout': 120,
         'format': 'bestvideo+bestaudio/best',
         'outtmpl': str(videos_dir / '%(title)s.%(ext)s'),
-        'proxy': 'socks5://127.0.0.1:10801',
+        # 'proxy': 'socks5://127.0.0.1:10801',
         'http_chunk_size': 10485760,
         'nocheckcertificate': True,
         'merge_output_format': 'mkv',
         'writethumbnail': False,
         'postprocessors': [],
-        'ffmpeg_location': '/usr/bin/ffmpeg',
+        'retries': 5,
+        # 'ffmpeg_location': '/usr/bin/ffmpeg',
         'prefer_ffmpeg': True,
         'keepvideo': False,
     }
@@ -75,8 +76,6 @@ def download_video(url):
             # Устанавливаем формат для загрузки
             format_id = selected_format['format_id']
             download_opts['format'] = f"{format_id}+bestaudio/best"
-
-            print("Видео будет загружено и сконвертировано в MP4 с кодеком H264")
             
             # Загружаем видео
             with yt_dlp.YoutubeDL(download_opts) as ydl_download:
